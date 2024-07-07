@@ -30,6 +30,13 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         String providedServiceKey = request.getParameter(SERVICE_KEY_QUERY_PARAM);
         CustomAuthentication customAuth = new CustomAuthentication(false, providedServiceKey);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         CustomAuthenticationManager customAuthenticationManager = new CustomAuthenticationManager(serviceKey);
         try {
             Authentication auth = customAuthenticationManager.authenticate(customAuth);
